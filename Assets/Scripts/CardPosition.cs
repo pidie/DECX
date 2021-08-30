@@ -25,12 +25,10 @@ public class CardPosition : MonoBehaviour
 	public void LightOn()
 	{
 		color.a = 1;
-		Debug.Log("on");
 	}
 
 	public void LightOff()
 	{
 		color.a = 0;
-		Debug.Log("off");
 	}
 }

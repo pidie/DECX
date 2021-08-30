@@ -66,22 +66,28 @@ public class Hand : MonoBehaviour
 
 				RaycastHit[] hits;
 				hits = Physics.RaycastAll(ray, rayLength);
+				bool noCardPosition = true;
 
 				foreach (RaycastHit hit in hits)
 				{
-					if (hit.transform.GetComponent<CardPosition>())
+					if (hit.transform.GetComponent<CardPosition>() != null)
 					{
-						dropOff = hit.transform.GetComponent<CardPosition>();
-						dropOff.LightOn();
-					}
-					else
-					{
-						if (dropOff != null)
+						if (dropOff == null)
 						{
-							dropOff.LightOff();
+							dropOff = hit.transform.GetComponent<CardPosition>();
+							dropOff.LightOn();
 						}
-						dropOff = null;
+
+						noCardPosition = false;
 					}
+				}
+				if (noCardPosition)
+				{
+					if (dropOff != null)
+					{
+						dropOff.LightOff();
+					}
+					dropOff = null;
 				}
 			}
 		}

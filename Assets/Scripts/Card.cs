@@ -43,7 +43,6 @@ public class Card : MonoBehaviour
 
                 this.gameObject.name = title;
             }
-
             initData = true;
         }
         
@@ -71,6 +70,7 @@ public class Card : MonoBehaviour
         Description.text = ModifyTextForValue(description);
     }
 
+    // rename this - maybe expand on it so it's its own class?
     private string ModifyTextForValue(string description)
     {
         string exception = "#!X:DMG";

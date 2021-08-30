@@ -57,4 +57,10 @@ public class GameManager : MonoBehaviour
         cards = cards.OrderBy(a => Guid.NewGuid()).ToList();
         return cards;
     }
+    
+    private List<Card> ShuffleCards(List<Card> cards)
+    {
+        cards = cards.OrderBy(a => Guid.NewGuid()).ToList();
+        return cards;
+    }
 }
