@@ -56,10 +56,13 @@ public class Card : MonoBehaviour
 
     private void OnMouseUp()
     {
+        Hand hand = GameObject.Find("Hand").GetComponent<Hand>();
+        
         isBeingHeld = false;
-        if (true)
+        if (hand.dropOff != null)
         {
-            
+            hand.dropOff.PlaceCardOnTableFromHand(this);
+            Destroy(gameObject);
         }
     }
 

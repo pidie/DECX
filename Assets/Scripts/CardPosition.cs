@@ -10,7 +10,7 @@ public class CardPosition : MonoBehaviour
 
 	private void Awake()
 	{
-		color = transform.GetComponent<MeshRenderer>().material.color;
+		color = this.transform.GetComponent<MeshRenderer>().material.color;
 	}
 
 	public bool GetIsOccupied()
@@ -30,5 +30,11 @@ public class CardPosition : MonoBehaviour
 	public void LightOff()
 	{
 		color.a = 0;
+	}
+
+	public void PlaceCardOnTableFromHand(Card card)
+	{
+		Instantiate(card.gameObject, this.transform.parent.transform);
+		isOccupied = true;
 	}
 }
