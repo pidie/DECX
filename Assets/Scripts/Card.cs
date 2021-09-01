@@ -73,25 +73,43 @@ public class Card : MonoBehaviour
             }
             initData = true;
         }
+
+        if (creatureData)
+        {
+            CheckVitals();
+        }
         
         DrawCardToScreen();
     }
 
     private void OnMouseDown()
     {
-        isBeingHeld = true;
+        // click the card from the hand
+        if (transform.parent.GetComponent<Hand>())
+        {
+            isBeingHeld = true;
+        }
+        
+        // click a card on the table
+        else if (transform.parent.GetChild(0).GetComponent<CardPosition>())
+        {
+            healthPoints -= 1;
+        }
     }
 
     private void OnMouseUp()
     {
         Hand hand = GameObject.Find("Hand").GetComponent<Hand>();
-        
-        isBeingHeld = false;
-        if (hand.dropOff != null)
+
+        if (isBeingHeld == true)
         {
-            hand.dropOff.PlaceCardOnTableFromHand(this);
-            hand.cardsInHand.Remove(this);
-            Destroy(gameObject);
+            isBeingHeld = false;
+            if (hand.dropOff != null)
+            {
+                hand.dropOff.PlaceCardOnTableFromHand(this);
+                hand.cardsInHand.Remove(this);
+                Destroy(gameObject);
+            }
         }
     }
 
@@ -124,5 +142,13 @@ public class Card : MonoBehaviour
             description = description.Replace(exception, "5 Fire");
         }
         return description;
+    }
+
+    private void CheckVitals()
+    {
+        if (healthPoints < 1)
+        {
+            Destroy(this.gameObject);
+        }
     }
 }

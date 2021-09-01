@@ -7,8 +7,11 @@ using UnityEngine;
 public class Hand : MonoBehaviour
 {
 	public List<Card> cardsInHand;
+	[Range(0, 12)]	public float maxCardsInHand;
+	
 	[CanBeNull] public CardPosition dropOff { get; private set; }
 
+	// the rayOffset is to try and get the card to drag but still be able to view the CardPositions
 	[Range(-10f, 10f)] [SerializeField]	private float rayOffsetX;
 	[Range(-10f, 10f)] [SerializeField] private float rayOffsetY;
 	[Range(-10f, 10f)] [SerializeField] private float rayOffsetZ;
@@ -18,11 +21,14 @@ public class Hand : MonoBehaviour
 
 	private void Awake()
 	{
-		widthBetweenCards = 1.2f;
-		cardWidth = 7f;
+		maxCardsInHand = 8;
+		
 		dropOff = null;
 		
 		rayOffsetX = 0; rayOffsetY = 0; rayOffsetZ = 0;
+		
+		widthBetweenCards = 1.2f;
+		cardWidth = 7f;
 	}
 
 	private void Update()

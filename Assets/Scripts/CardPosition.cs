@@ -43,5 +43,6 @@ public class CardPosition : MonoBehaviour
 			this.transform.parent.transform);
 		isOccupied = true;
 		newCard.PlayCard();
+		LightOff();
 	}
 }
