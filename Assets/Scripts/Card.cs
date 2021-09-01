@@ -14,6 +14,9 @@ public class Card : MonoBehaviour
     public string ID;
     public int energyCost;
     public int healthPoints;
+    public int healthPointModifier;
+    public int damageAmount;
+    public int damageAmountModifier;
 
     [Header("Flavor Info")]
     public string description;
@@ -27,10 +30,12 @@ public class Card : MonoBehaviour
     public TMP_Text Title;
     public TMP_Text EnergyCost;
     public TMP_Text HealthPoints;
+    public TMP_Text DamageAmount;
     public TMP_Text Description;
 
     public GameObject energyCostDisplay;
     public GameObject healthPointsDisplay;
+    public GameObject damageAmountDisplay;
 
     private void Awake()
     {
@@ -50,6 +55,7 @@ public class Card : MonoBehaviour
 
                 this.gameObject.name = title;
                 healthPointsDisplay.SetActive(false);
+                damageAmountDisplay.SetActive(false);
 
                 creatureData = null;
             }
@@ -57,11 +63,13 @@ public class Card : MonoBehaviour
             {
                 this.title = creatureData.title;
                 this.ID = creatureData.ID;
-                this.healthPoints = creatureData.healthPoints;
+                this.healthPoints = creatureData.healthPoints + healthPointModifier;
+                this.damageAmount = creatureData.damageAmount + damageAmountModifier;
                 this.description = creatureData.description;
                 
                 this.gameObject.name = title;
                 healthPointsDisplay.SetActive(true);
+                damageAmountDisplay.SetActive(true);
             }
             initData = true;
         }
@@ -92,6 +100,7 @@ public class Card : MonoBehaviour
         Title.text = title;
         EnergyCost.text = energyCost.ToString();
         HealthPoints.text = healthPoints.ToString();
+        DamageAmount.text = damageAmount.ToString();
         Description.text = ModifyTextForValue(description);
     }
     
@@ -99,8 +108,9 @@ public class Card : MonoBehaviour
     {
         if (actionData.summonCreature)
         {
-            this.creatureData = actionData.creatureSummoned;
-            this.actionData = null;
+            creatureData = actionData.creatureSummoned;
+            healthPointModifier = actionData.modifyHealth;
+            actionData = null;
         }
     }
 
