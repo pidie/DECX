@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Card : MonoBehaviour
 {
@@ -11,18 +13,24 @@ public class Card : MonoBehaviour
     public string title;
     public string ID;
     public int energyCost;
+    public int healthPoints;
 
     [Header("Flavor Info")]
     public string description;
 
     [Header("Dev Info")]
-    public CardData cardData;
+    public CardData_Action actionData;
+    [CanBeNull] public CardData_Creature creatureData;
     private bool initData;
     public bool isBeingHeld;
 
     public TMP_Text Title;
     public TMP_Text EnergyCost;
+    public TMP_Text HealthPoints;
     public TMP_Text Description;
+
+    public GameObject energyCostDisplay;
+    public GameObject healthPointsDisplay;
 
     private void Awake()
     {
@@ -33,15 +41,27 @@ public class Card : MonoBehaviour
     {
         if (!initData)
         {
-            // initializes the card
-            if (cardData)
+            if (actionData != null)
             {
-                this.title = cardData.title;
-                this.ID = cardData.ID;
-                this.energyCost = cardData.energyCost;
-                this.description = cardData.description;
+                this.title = actionData.title;
+                this.ID = actionData.ID;
+                this.energyCost = actionData.energyCost;
+                this.description = actionData.description;
 
                 this.gameObject.name = title;
+                healthPointsDisplay.SetActive(false);
+
+                creatureData = null;
+            }
+            else if (creatureData)
+            {
+                this.title = creatureData.title;
+                this.ID = creatureData.ID;
+                this.healthPoints = creatureData.healthPoints;
+                this.description = creatureData.description;
+                
+                this.gameObject.name = title;
+                healthPointsDisplay.SetActive(true);
             }
             initData = true;
         }
@@ -62,6 +82,7 @@ public class Card : MonoBehaviour
         if (hand.dropOff != null)
         {
             hand.dropOff.PlaceCardOnTableFromHand(this);
+            hand.cardsInHand.Remove(this);
             Destroy(gameObject);
         }
     }
@@ -70,7 +91,17 @@ public class Card : MonoBehaviour
     {
         Title.text = title;
         EnergyCost.text = energyCost.ToString();
+        HealthPoints.text = healthPoints.ToString();
         Description.text = ModifyTextForValue(description);
+    }
+    
+    public void PlayCard()
+    {
+        if (actionData.summonCreature)
+        {
+            this.creatureData = actionData.creatureSummoned;
+            this.actionData = null;
+        }
     }
 
     // rename this - maybe expand on it so it's its own class?

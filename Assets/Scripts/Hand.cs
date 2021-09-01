@@ -9,6 +9,10 @@ public class Hand : MonoBehaviour
 	public List<Card> cardsInHand;
 	[CanBeNull] public CardPosition dropOff { get; private set; }
 
+	[Range(-10f, 10f)] [SerializeField]	private float rayOffsetX;
+	[Range(-10f, 10f)] [SerializeField] private float rayOffsetY;
+	[Range(-10f, 10f)] [SerializeField] private float rayOffsetZ;
+
 	public float cardWidth;
 	[Range(0f, 5f)] public float widthBetweenCards;
 
@@ -17,6 +21,8 @@ public class Hand : MonoBehaviour
 		widthBetweenCards = 1.2f;
 		cardWidth = 7f;
 		dropOff = null;
+		
+		rayOffsetX = 0; rayOffsetY = 0; rayOffsetZ = 0;
 	}
 
 	private void Update()
@@ -60,8 +66,9 @@ public class Hand : MonoBehaviour
 				card.transform.position = Camera.main.ScreenToWorldPoint(pos);
 
 				float rayLength = 80f;
+				Vector3 rayOffset = new Vector3(rayOffsetX, rayOffsetY, rayOffsetZ);
 				
-				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition + rayOffset);
 				Debug.DrawRay(ray.origin, ray.direction * rayLength);
 
 				RaycastHit[] hits;
@@ -91,14 +98,5 @@ public class Hand : MonoBehaviour
 				}
 			}
 		}
-	}
-
-	public bool CanPlaceCard()
-	{
-		if (dropOff == null)
-		{
-			return false;
-		}
-		return true;
 	}
 }

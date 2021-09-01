@@ -9,12 +9,10 @@ using Random = System.Random;
 
 public class GameManager : MonoBehaviour
 {
-    public List<CardData> cardDatas;
+    public List<CardData_Action> cardDatas;
     public List<Card> cards;
     public GameObject cardPrefab;
     public Random rand;
-
-    // public Hand hand;
 
     public Button drawCardButton;
     public TMP_Text CardsInStock;
@@ -45,14 +43,14 @@ public class GameManager : MonoBehaviour
         }
         GameObject newCard = Instantiate(cardPrefab, gameObject.transform);
         Card c = newCard.GetComponent<Card>();
-        c.cardData = cardDatas[0];
+        c.actionData = cardDatas[0];
         newCard.transform.parent = hand.transform;
         
         cardDatas.Remove(cardDatas[0]);
         hand.cardsInHand.Add(c);
     }
     
-    private List<CardData> ShuffleCards(List<CardData> cards)
+    private List<CardData_Action> ShuffleCards(List<CardData_Action> cards)
     {
         cards = cards.OrderBy(a => Guid.NewGuid()).ToList();
         return cards;
