@@ -6,6 +6,13 @@ namespace CardManager
 {
 	static class InstantiateCard
 	{
+		
+	/// Contains methods related to moving and rendering Cards.
+	///
+	/// InitializeCard (Card card) : initializes the Card variables from its CardData
+	/// DrawCardToScreen (Card card) : writes the Card variables to the TMP objects on the Card
+	/// PlaceCardOnTableFromHand (Card card, CardPosition cardPosition) : Moves a Card from the Hand to a CardPosition
+	
 		public static void InitializeCard(Card card)
 		{
 			if (card.actionData != null)
@@ -45,6 +52,15 @@ namespace CardManager
 			card.DamageAmount.text = card.damageAmount.ToString();
 			card.Description.text = card.ModifyTextForValue(card.description);
 		}
+		
+		public static void PlaceCardOnTableFromHand(Card card, CardPosition cardPosition)
+        {
+        	Card newCard = MonoBehaviour.Instantiate(card, cardPosition.transform.position, Quaternion.Euler(90, 0, 180),
+        		cardPosition.transform.parent.transform);
+        	cardPosition.isOccupied = true;
+        	newCard.PlayCard();
+        	cardPosition.LightOff();
+        }
 	}
 
 	static class ActivateCard
