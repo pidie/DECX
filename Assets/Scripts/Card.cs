@@ -11,6 +11,7 @@ using CardManager;
 
 // todo: figure out why clicks don't always register when on table
 // todo: move some of the functionality to CardCreator
+// todo: sometimes the current card from Hand is being detected in CardPosition when trying to place it
 
 public class Card : MonoBehaviour
 {
@@ -98,13 +99,13 @@ public class Card : MonoBehaviour
             }
             else if (placeOnTable != null && !placeOnTable.isOccupied)
             {
-                placeOnTable.PlaceCardOnTableFromHand(this);
+                InstantiateCard.PlaceCardOnTableFromHand(this, placeOnTable);
                 hand.cardsInHand.Remove(this);
                 Destroy(gameObject);
             }
             else if (placeOnTable.isOccupied)
             {
-                Debug.LogWarning("A card is already here.");
+                Debug.LogWarning($"A card ({title}) is already here.");
             }
         }
     }

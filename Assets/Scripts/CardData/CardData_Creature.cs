@@ -11,17 +11,21 @@ public enum typeOfCreature
 }
 public class CardData_Creature : CardData
 {
-    public typeOfData Creature;
+    [HideInInspector]   public typeOfData Creature;
+    
     [Header("Creature Defense")]
     public int healthPoints;
     public int armorPoints;
     public int shieldPoints;
     public int spellShieldPoints;
+    
     [Header("Creature Offense")] 
     public int damageAmount;
+    
     [Header("Creature Actions")]
     public int numOfActions;
     public int energyPoints;
+    
     [Header("Creature Information")]
     public bool isInanimate;
 }

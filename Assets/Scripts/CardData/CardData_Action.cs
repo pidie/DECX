@@ -11,7 +11,9 @@ public enum typeOfAction
 }
 public class CardData_Action : CardData
 {
-    public typeOfData TypeOfData = typeOfData.Action;
+    [HideInInspector]   public typeOfData TypeOfData = typeOfData.Action;
+    
+    [Header("Action Informaion")]
     public int energyCost;
     public int cooldownPeriod;
 

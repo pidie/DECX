@@ -12,9 +12,9 @@ public class Hand : MonoBehaviour
 	[CanBeNull] public CardPosition dropOff { get; private set; }
 
 	// the rayOffset is to try and get the card to drag but still be able to view the CardPositions
-	[Range(-10f, 10f)] [SerializeField]	private float rayOffsetX;
-	[Range(-10f, 10f)] [SerializeField] private float rayOffsetY;
-	[Range(-10f, 10f)] [SerializeField] private float rayOffsetZ;
+	[Range(-20f, 20f)] [SerializeField]	private float rayOffsetX;
+	[Range(-20f, 20f)] [SerializeField] private float rayOffsetY;
+	[Range(-20f, 20f)] [SerializeField] private float rayOffsetZ;
 
 	public float cardWidth;
 	[Range(0f, 5f)] public float widthBetweenCards;
@@ -22,11 +22,8 @@ public class Hand : MonoBehaviour
 	private void Awake()
 	{
 		maxCardsInHand = 8;
-		
 		dropOff = null;
-		
 		rayOffsetX = 0; rayOffsetY = 0; rayOffsetZ = 0;
-		
 		widthBetweenCards = 1.2f;
 		cardWidth = 7f;
 	}
