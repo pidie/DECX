@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CardCreator
+namespace CardManager
 {
 	static class InstantiateCard
 	{
@@ -36,5 +36,19 @@ namespace CardCreator
 				card.damageAmountDisplay.SetActive(true);
 			}
 		}
+		
+		public static void DrawCardToScreen(Card card)
+		{
+			card.Title.text = card.title;
+			card.EnergyCost.text = card.energyCost.ToString();
+			card.HealthPoints.text = card.healthPoints.ToString();
+			card.DamageAmount.text = card.damageAmount.ToString();
+			card.Description.text = card.ModifyTextForValue(card.description);
+		}
+	}
+
+	static class ActivateCard
+	{
+		
 	}
 }

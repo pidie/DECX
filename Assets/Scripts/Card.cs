@@ -7,7 +7,7 @@ using TMPro;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
-using CardCreator;
+using CardManager;
 
 // todo: figure out why clicks don't always register when on table
 // todo: move some of the functionality to CardCreator
@@ -63,7 +63,7 @@ public class Card : MonoBehaviour
             CheckVitals();
         }
         
-        DrawCardToScreen();
+        InstantiateCard.DrawCardToScreen(this);
     }
 
     private void OnMouseDown()
@@ -108,15 +108,6 @@ public class Card : MonoBehaviour
             }
         }
     }
-
-    private void DrawCardToScreen()
-    {
-        Title.text = title;
-        EnergyCost.text = energyCost.ToString();
-        HealthPoints.text = healthPoints.ToString();
-        DamageAmount.text = damageAmount.ToString();
-        Description.text = ModifyTextForValue(description);
-    }
     
     public void PlayCard()
     {
@@ -130,7 +121,7 @@ public class Card : MonoBehaviour
     }
 
     // rename this - maybe expand on it so it's its own class?
-    private string ModifyTextForValue(string description)
+    public string ModifyTextForValue(string description)
     {
         string exception = "#!X:DMG";
         
