@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum typeOfData
 {
@@ -12,6 +13,7 @@ public class CardData : ScriptableObject
 {
     public string title;
     public string ID;
+    public Texture image;
 
     public string description;
     [TextArea(10,50)]   public string notes;

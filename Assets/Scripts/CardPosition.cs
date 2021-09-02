@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class CardPosition : MonoBehaviour
 {
-	private bool isOccupied;
+	public bool isOccupied;
 	private Color color;
 	private Material material;
 
@@ -14,15 +14,6 @@ public class CardPosition : MonoBehaviour
 	{
 		color = this.transform.GetComponent<MeshRenderer>().material.color;
 		material = this.transform.GetComponent<MeshRenderer>().material;
-	}
-
-	public bool GetIsOccupied()
-	{
-		if (isOccupied)
-		{
-			return true;
-		}
-		return false;
 	}
 
 	public void LightOn()

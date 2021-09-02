@@ -4,8 +4,13 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using TMPro;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
+using CardCreator;
+
+// todo: figure out why clicks don't always register when on table
+// todo: move some of the functionality to CardCreator
 
 public class Card : MonoBehaviour
 {
@@ -26,12 +31,15 @@ public class Card : MonoBehaviour
     [CanBeNull] public CardData_Creature creatureData;
     private bool initData;
     public bool isBeingHeld;
+    [CanBeNull] private CardPosition placeOnTable;
 
+    [Header("Display")]
     public TMP_Text Title;
     public TMP_Text EnergyCost;
     public TMP_Text HealthPoints;
     public TMP_Text DamageAmount;
     public TMP_Text Description;
+    public RawImage image;
 
     public GameObject energyCostDisplay;
     public GameObject healthPointsDisplay;
@@ -46,31 +54,7 @@ public class Card : MonoBehaviour
     {
         if (!initData)
         {
-            if (actionData != null)
-            {
-                this.title = actionData.title;
-                this.ID = actionData.ID;
-                this.energyCost = actionData.energyCost;
-                this.description = actionData.description;
-
-                this.gameObject.name = title;
-                healthPointsDisplay.SetActive(false);
-                damageAmountDisplay.SetActive(false);
-
-                creatureData = null;
-            }
-            else if (creatureData)
-            {
-                this.title = creatureData.title;
-                this.ID = creatureData.ID;
-                this.healthPoints = creatureData.healthPoints + healthPointModifier;
-                this.damageAmount = creatureData.damageAmount + damageAmountModifier;
-                this.description = creatureData.description;
-                
-                this.gameObject.name = title;
-                healthPointsDisplay.SetActive(true);
-                damageAmountDisplay.SetActive(true);
-            }
+            InstantiateCard.InitializeCard(this);
             initData = true;
         }
 
@@ -100,15 +84,27 @@ public class Card : MonoBehaviour
     private void OnMouseUp()
     {
         Hand hand = GameObject.Find("Hand").GetComponent<Hand>();
+        if (placeOnTable == null)
+        {
+            placeOnTable = hand.dropOff;
+        }
 
         if (isBeingHeld == true)
         {
             isBeingHeld = false;
-            if (hand.dropOff != null)
+            if (placeOnTable == null)
             {
-                hand.dropOff.PlaceCardOnTableFromHand(this);
+                // do nothing
+            }
+            else if (placeOnTable != null && !placeOnTable.isOccupied)
+            {
+                placeOnTable.PlaceCardOnTableFromHand(this);
                 hand.cardsInHand.Remove(this);
                 Destroy(gameObject);
+            }
+            else if (placeOnTable.isOccupied)
+            {
+                Debug.LogWarning("A card is already here.");
             }
         }
     }
@@ -128,6 +124,7 @@ public class Card : MonoBehaviour
         {
             creatureData = actionData.creatureSummoned;
             healthPointModifier = actionData.modifyHealth;
+            damageAmountModifier = actionData.modifyDamage;
             actionData = null;
         }
     }
@@ -148,6 +145,7 @@ public class Card : MonoBehaviour
     {
         if (healthPoints < 1)
         {
+            placeOnTable.isOccupied = false;
             Destroy(this.gameObject);
         }
     }
