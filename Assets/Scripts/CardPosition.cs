@@ -27,13 +27,4 @@ public class CardPosition : MonoBehaviour
 		color.a = 0;
 		material.SetColor("_Color", color);
 	}
-
-	public void PlaceCardOnTableFromHand(Card card)
-	{
-		Card newCard = Instantiate(card, this.transform.position, Quaternion.Euler(90, 0, 180),
-			this.transform.parent.transform);
-		isOccupied = true;
-		newCard.PlayCard();
-		LightOff();
-	}
 }
