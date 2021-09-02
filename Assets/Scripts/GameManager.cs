@@ -5,15 +5,11 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Random = System.Random;
 
 public class GameManager : MonoBehaviour
 {
     public List<CardData_Action> cardDatas;
-    public List<Card> cards;
     public GameObject cardPrefab;
-    public Random rand;
-
     public Button drawCardButton;
     public TMP_Text CardsInStock;
 
@@ -23,8 +19,6 @@ public class GameManager : MonoBehaviour
         btn.onClick.AddListener(CreateNewCard);
 
         cardDatas = ShuffleCards(cardDatas);
-
-        rand = new Random();
     }
 
     private void Update()
@@ -51,12 +45,6 @@ public class GameManager : MonoBehaviour
     }
     
     private List<CardData_Action> ShuffleCards(List<CardData_Action> cards)
-    {
-        cards = cards.OrderBy(a => Guid.NewGuid()).ToList();
-        return cards;
-    }
-    
-    private List<Card> ShuffleCards(List<Card> cards)
     {
         cards = cards.OrderBy(a => Guid.NewGuid()).ToList();
         return cards;
