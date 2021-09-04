@@ -75,11 +75,6 @@ namespace CardManager
         	ActivateCard.PlayCard(newCard);
             cardPosition.Lights(false);
             cardPosition.cardInPosition = card;
-
-            foreach (CardPosition cp in GameObject.FindObjectsOfType(typeof(CardPosition)))
-            {
-	            cp.RedAlert(false);
-            }
         }
 	}
 
@@ -178,17 +173,17 @@ namespace CardManager
 		{
 			if (card.creatureData != null)
 			{
-				if (card.creatureData.isLockedFront)
+				if (card.creatureData.isLockedBack && card.creatureData.isLockedFront)
 				{
-					if (cardPosition.IsFrontLine())
-					{
-						return true;
-					}
+					return false;
 				}
-				else if (!card.creatureData.isLockedBack && !card.creatureData.isLockedFront)
+				else if ((card.creatureData.isLockedFront && cardPosition.IsFrontLine()) || 
+				    (card.creatureData.isLockedBack && !cardPosition.IsFrontLine()) ||
+				    (!card.creatureData.isLockedBack && !card.creatureData.isLockedFront))
 				{
 					return true;
 				}
+				
 			}
 			else if (card.actionData)
 			{
@@ -196,6 +191,14 @@ namespace CardManager
 			}
         
 			return false;
+		}
+
+		public static void RedAlertStandDown()
+		{
+			foreach (CardPosition cp in GameObject.FindObjectsOfType(typeof(CardPosition)))
+			{
+				cp.RedAlert(false);
+			}
 		}
 	}
 }

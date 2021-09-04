@@ -7,6 +7,7 @@ using UnityEngine;
 public class CardPosition : MonoBehaviour
 {
 	public bool isOccupied;
+	public bool isRed;
 	public Card cardInPosition;
 	private Color color;
 	private Color savedColor;
@@ -17,6 +18,7 @@ public class CardPosition : MonoBehaviour
 		color = this.transform.GetComponent<MeshRenderer>().material.color;
 		savedColor = color;
 		material = this.transform.GetComponent<MeshRenderer>().material;
+		isRed = false;
 	}
 
 	public bool IsFrontLine()
@@ -34,10 +36,13 @@ public class CardPosition : MonoBehaviour
 		if (active)
 		{
 			color = Color.red;
+			color.a = 0.4f;
+			isRed = true;
 		}
 		else
 		{
 			color = savedColor;
+			isRed = false;
 		}
 		material.SetColor("_Color", color);
 	}

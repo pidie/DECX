@@ -12,6 +12,7 @@ using CardManager;
 // todo: figure out why clicks don't always register when on table
 // todo: move some of the functionality to CardManager
 // todo: if attempting to place a card on a non-empty CardPosition, all card positions are now locked
+// todo: RedA;ertStandDown when clicking a card in a CardPosition that has placement restrictions
 
 public class Card : MonoBehaviour
 {
@@ -116,6 +117,8 @@ public class Card : MonoBehaviour
                 Debug.Log(placeOnTable.name);
                 Debug.LogWarning($"A card ({placeOnTable.cardInPosition.title}) is already here.");
             }
+            
+            ActivateCard.RedAlertStandDown();
         }
     }
 

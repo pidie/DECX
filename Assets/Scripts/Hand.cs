@@ -19,7 +19,7 @@ public class Hand : MonoBehaviour
 
 	private void Awake()
 	{
-		maxCardsInHand = 8;
+		maxCardsInHand = 4;
 		dropOff = null;
 		widthBetweenCards = 1.2f;
 		cardWidth = 7f;
