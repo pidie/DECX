@@ -12,12 +12,16 @@ public enum typeOfCreature
 public class CardData_Creature : CardData
 {
     [HideInInspector]   public typeOfData Creature;
+
+    [Header("Creature Data")] 
+    public List<CardData_Action> actions;
     
     [Header("Creature Defense")]
     public int healthPoints;
     public int armorPoints;
     public int shieldPoints;
     public int spellShieldPoints;
+    public bool canBeTargetedByMelee = true;
     
     [Header("Creature Offense")] 
     public int damageAmount;
@@ -28,4 +32,6 @@ public class CardData_Creature : CardData
     
     [Header("Creature Information")]
     public bool isInanimate;
+    public bool isLockedFront;
+    public bool isLockedBack;
 }

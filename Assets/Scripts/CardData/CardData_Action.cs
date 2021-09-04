@@ -6,30 +6,52 @@ using UnityEngine;
 public enum typeOfAction
 {
     Ability,
-    Hidden,
     Spell
 }
 public class CardData_Action : CardData
 {
     [HideInInspector]   public typeOfData TypeOfData = typeOfData.Action;
-    
+
+    [Header("Conditions")] 
+    public bool isCreatureOnly;
+    public bool isHidden;
+    public bool isSelfCast;
+
     [Header("Action Informaion")]
     public int energyCost;
     public int cooldownPeriod;
+    public int range;
 
-    [Header("Damage")]
+    [Header("Melee Information")]
+    public bool isMelee;
+    public bool isReach;
+
+    [Header("Ranged Information")] 
+    public bool isRanged;
+    public int minRange;
+
+    [Header("AOE Information")] 
+    public bool isAOE;
+    public bool AOERange;
+
+    [Header("Multitarget Information")] 
+    public bool isMultitarget;
+    public int minNumOfTargets;
+    public int maxNumOfTargets;
+    
+    [Header("Damage Information")]
     public bool dealsDamage;
     public int baseDamage;
     public int damageOverTime;
     public int damageOverTimeDuration;
 
-    [Header("Heal")] 
+    [Header("Heal Information")] 
     public bool heals;
     public int baseHeal;
     public int healsOverTime;
     public int healsOverTimeDuration;
     
-    [Header("Summon")]
+    [Header("Summon Information")]
     public bool summonCreature;
     public CardData_Creature creatureSummoned;
     public int modifyHealth;

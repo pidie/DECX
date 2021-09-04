@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -9,27 +10,39 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     public List<CardData_Action> cardDatas;
+    public List<CardData_Creature_Companion> companions;
+    public int numOfCompanions;
+    public int maxNumOfCompanions;
     public GameObject cardPrefab;
     public Button drawCardButton;
     public TMP_Text CardsInStock;
+    private Hand hand;
 
     private void Awake()
     {
-        Button btn = drawCardButton.GetComponent<Button>();
-        btn.onClick.AddListener(CreateNewCard);
+        drawCardButton.onClick.AddListener(CreateNewCard);
+        numOfCompanions = companions.Count;
+        hand = GameObject.Find("Hand").GetComponent<Hand>();
 
         cardDatas = ShuffleCards(cardDatas);
+    }
+
+    private void Start()
+    {
+        PlaceCompanions();
     }
 
     private void Update()
     {
         CardsInStock.text = cardDatas.Count.ToString();
+        if (hand.companionsPlaced)
+        {
+            drawCardButton.interactable = true;
+        }
     }
 
     public void CreateNewCard()
     {
-        Hand hand = GameObject.Find("Hand").GetComponent<Hand>();
-
         if (hand.cardsInHand.Count >= hand.maxCardsInHand)
         {
             Debug.Log($"Cannot have more than {hand.maxCardsInHand} cards in Hand.");
@@ -49,6 +62,22 @@ public class GameManager : MonoBehaviour
         
         cardDatas.Remove(cardDatas[0]);
         hand.cardsInHand.Add(c);
+    }
+
+    private void PlaceCompanions()
+    {
+        drawCardButton.interactable = false;
+        TMP_Text messageBox = GameObject.Find("MessageBox").GetComponent<TMP_Text>();
+        // CardPosition dropOff = null;
+
+        List<Card> cards = new List<Card>();
+
+        foreach (CardData_Creature_Companion companion in companions)
+        {
+            Card card = CardManager.InstantiateCard.CreateNewCard(hand.transform, companion);
+            hand.cardsInHand.Add(card);
+        }
+        companions.Clear();
     }
     
     private List<CardData_Action> ShuffleCards(List<CardData_Action> cards)

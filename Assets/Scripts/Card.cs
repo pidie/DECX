@@ -11,7 +11,7 @@ using CardManager;
 
 // todo: figure out why clicks don't always register when on table
 // todo: move some of the functionality to CardCreator
-// todo: sometimes the current card from Hand is being detected in CardPosition when trying to place it
+// todo: if attempting to place a card on a non-empty CardPosition, all card positions are now locked
 
 public class Card : MonoBehaviour
 {
@@ -67,6 +67,7 @@ public class Card : MonoBehaviour
 
     private void OnMouseDown()
     {
+        CardManager.ActivateCard.PaintValidCardPositions(this);
         // click the card from the hand
         if (transform.parent.GetComponent<Hand>())
         {
@@ -82,6 +83,7 @@ public class Card : MonoBehaviour
 
     private void OnMouseUp()
     {
+        CardManager.ActivateCard.PaintValidCardPositions(this);
         Hand hand = GameObject.Find("Hand").GetComponent<Hand>();
         if (placeOnTable == null)
         {
@@ -110,9 +112,30 @@ public class Card : MonoBehaviour
             }
             else if (placeOnTable.isOccupied)
             {
-                Debug.LogWarning($"A card ({title}) is already here.");
+                Debug.Log(placeOnTable.name);
+                Debug.LogWarning($"A card ({placeOnTable.cardInPosition.title}) is already here.");
             }
         }
+    }
+
+    public bool CanBePlaced(CardPosition cardPosition)
+    {
+        if (creatureData != null)
+        {
+            if (creatureData.isLockedFront)
+            {
+                if (cardPosition.IsFrontLine())
+                {
+                    return true;
+                }
+            }
+        }
+        else if (actionData)
+        {
+            return true;
+        }
+        
+        return false;
     }
 
     private void CheckVitals()

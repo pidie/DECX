@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -72,12 +73,65 @@ namespace CardManager
         		cardPosition.transform.parent.transform);
         	cardPosition.isOccupied = true;
         	ActivateCard.PlayCard(newCard);
-        	cardPosition.LightOff();
+            cardPosition.Lights(false);
+            cardPosition.cardInPosition = card;
+
+            foreach (CardPosition cp in GameObject.FindObjectsOfType(typeof(CardPosition)))
+            {
+	            cp.RedAlert(false);
+            }
         }
 	}
 
 	static class ActivateCard
 	{
+		public static CardPosition HoldingCard(List<Card> cards, CardPosition cardPosition)
+		{
+			foreach (Card card in cards)
+			{
+				if (card.isBeingHeld)
+				{
+					Vector3 pos = new Vector3(Input.mousePosition.x, Input.mousePosition.y,
+						Camera.main.WorldToScreenPoint(card.transform.position).z - 0.5f);
+					card.transform.position = Camera.main.ScreenToWorldPoint(pos);
+
+					float rayLength = 80f;
+				
+					Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+					Debug.DrawRay(ray.origin, ray.direction * rayLength);
+
+					RaycastHit[] hits;
+					hits = Physics.RaycastAll(ray, rayLength);
+					bool noCardPosition = true;
+
+					foreach (RaycastHit hit in hits)
+					{
+						if (hit.transform.GetComponent<CardPosition>() != null)
+						{
+							if (cardPosition == null && card.CanBePlaced(hit.transform.GetComponent<CardPosition>()))
+							{
+								cardPosition = hit.transform.GetComponent<CardPosition>();
+								cardPosition.Lights(true);
+							}
+
+							noCardPosition = false;
+						}
+					}
+					
+					if (noCardPosition)
+					{
+						if (cardPosition != null)
+						{
+							cardPosition.Lights(false);
+						}
+						cardPosition = null;
+					}
+				}
+			}
+
+			return cardPosition;
+		}
+		
 		public static string ModifyTextForValue(string description)
 		{
 			string exception = "#!X:DMG";
@@ -91,12 +145,31 @@ namespace CardManager
 		
 		public static void PlayCard(Card card)
 		{
-			if (card.actionData.summonCreature)
+			if (card.actionData != null && card.actionData.summonCreature)
 			{
 				card.creatureData = card.actionData.creatureSummoned;
 				card.healthPointModifier = card.actionData.modifyHealth;
 				card.damageAmountModifier = card.actionData.modifyDamage;
 				card.actionData = null;
+			}
+			else
+			{
+				
+			}
+		}
+
+		public static void PaintValidCardPositions(Card card)
+		{
+			foreach (CardPosition cardPosition in GameObject.FindObjectsOfType(typeof(CardPosition)))
+			{
+				if (!card.CanBePlaced(cardPosition))
+				{
+					cardPosition.RedAlert(true);
+				}
+				else
+				{
+					cardPosition.RedAlert(false);
+				}
 			}
 		}
 	}

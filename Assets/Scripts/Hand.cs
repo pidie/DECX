@@ -11,19 +11,16 @@ public class Hand : MonoBehaviour
 	
 	[CanBeNull] public CardPosition dropOff { get; private set; }
 
-	// the rayOffset is to try and get the card to drag but still be able to view the CardPositions
-	[Range(-20f, 20f)] [SerializeField]	private float rayOffsetX;
-	[Range(-20f, 20f)] [SerializeField] private float rayOffsetY;
-	[Range(-20f, 20f)] [SerializeField] private float rayOffsetZ;
-
 	public float cardWidth;
 	[Range(0f, 5f)] public float widthBetweenCards;
+
+	public bool handHasCompanions = false;
+	public bool companionsPlaced = false;
 
 	private void Awake()
 	{
 		maxCardsInHand = 8;
 		dropOff = null;
-		rayOffsetX = 0; rayOffsetY = 0; rayOffsetZ = 0;
 		widthBetweenCards = 1.2f;
 		cardWidth = 7f;
 	}
@@ -31,20 +28,27 @@ public class Hand : MonoBehaviour
 	private void Update()
 	{
 		ArrangeCardsInHand();
-		HoldingCard();
-	}
+		dropOff = CardManager.ActivateCard.HoldingCard(cardsInHand, dropOff);
+		if (cardsInHand.Count < 1) { }
+		else if (cardsInHand[0].creatureData != null && cardsInHand[0].creatureData.GetType() == typeof(
+			CardData_Creature_Companion))
+		{
+			handHasCompanions = true;
+		}
 
-	public int NumOfCards()
-	{
-		return cardsInHand.Count;
+		if (handHasCompanions && cardsInHand.Count < 1)
+		{
+			companionsPlaced = true;
+			handHasCompanions = false;
+		}
 	}
 
 	private void ArrangeCardsInHand()
 	{
-		if (NumOfCards() > 0)
+		if (cardsInHand.Count > 0)
 		{
-			int n = NumOfCards() - 1;
-			float xPosition = NumOfCards() > 1 ? ((cardWidth + widthBetweenCards) / 2) * n : 0f;
+			int n = cardsInHand.Count - 1;
+			float xPosition = cardsInHand.Count > 1 ? ((cardWidth + widthBetweenCards) / 2) * n : 0f;
 			Camera mainCamera = Camera.main;
 
 			foreach (Transform child in transform)
@@ -54,51 +58,6 @@ public class Hand : MonoBehaviour
                 
 				float cameraRotAdjust = mainCamera.transform.localEulerAngles.x;
 				child.transform.rotation = Quaternion.Euler(cameraRotAdjust, 180, 0);
-			}
-		}
-	}
-
-	private void HoldingCard()
-	{
-		foreach (Card card in cardsInHand)
-		{
-			if (card.isBeingHeld)
-			{
-				Vector3 pos = new Vector3(Input.mousePosition.x, Input.mousePosition.y,
-					Camera.main.WorldToScreenPoint(card.transform.position).z - 0.5f);
-				card.transform.position = Camera.main.ScreenToWorldPoint(pos);
-
-				float rayLength = 80f;
-				Vector3 rayOffset = new Vector3(rayOffsetX, rayOffsetY, rayOffsetZ);
-				
-				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition + rayOffset);
-				Debug.DrawRay(ray.origin, ray.direction * rayLength);
-
-				RaycastHit[] hits;
-				hits = Physics.RaycastAll(ray, rayLength);
-				bool noCardPosition = true;
-
-				foreach (RaycastHit hit in hits)
-				{
-					if (hit.transform.GetComponent<CardPosition>() != null)
-					{
-						if (dropOff == null)
-						{
-							dropOff = hit.transform.GetComponent<CardPosition>();
-							dropOff.LightOn();
-						}
-
-						noCardPosition = false;
-					}
-				}
-				if (noCardPosition)
-				{
-					if (dropOff != null)
-					{
-						dropOff.LightOff();
-					}
-					dropOff = null;
-				}
 			}
 		}
 	}
