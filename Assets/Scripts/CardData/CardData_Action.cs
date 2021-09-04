@@ -13,7 +13,7 @@ public class CardData_Action : CardData
     [HideInInspector]   public typeOfData TypeOfData = typeOfData.Action;
 
     [Header("Conditions")] 
-    public bool isCreatureOnly;
+    public bool isNPCOnly;
     public bool isHidden;
     public bool isSelfCast;
 
@@ -24,11 +24,11 @@ public class CardData_Action : CardData
 
     [Header("Melee Information")]
     public bool isMelee;
-    public bool isReach;
+    public bool hasReach;
 
     [Header("Ranged Information")] 
     public bool isRanged;
-    public int minRange;
+    [Range(0, 10)]  public int minRange = 1;
 
     [Header("AOE Information")] 
     public bool isAOE;

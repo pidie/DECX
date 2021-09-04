@@ -35,7 +35,7 @@ namespace CardManager
 				card.ID = card.actionData.ID;
 				card.energyCost = card.actionData.energyCost;
 				card.description = card.actionData.description;
-				card.image.texture = card.actionData.image;
+				card.image.texture = card.actionData.imageTexture;
 
 				card.gameObject.name = card.title;
 				card.healthPointsDisplay.SetActive(false);
@@ -50,7 +50,7 @@ namespace CardManager
 				card.healthPoints = card.creatureData.healthPoints + card.healthPointModifier;
 				card.damageAmount = card.creatureData.damageAmount + card.damageAmountModifier;
 				card.description = card.creatureData.description;
-				card.image.texture = card.creatureData.image;
+				card.image.texture = card.creatureData.imageTexture;
                 
 				card.gameObject.name = card.title;
 				card.healthPointsDisplay.SetActive(true);

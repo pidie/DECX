@@ -10,7 +10,7 @@ using UnityEngine.UI;
 using CardManager;
 
 // todo: figure out why clicks don't always register when on table
-// todo: move some of the functionality to CardCreator
+// todo: move some of the functionality to CardManager
 // todo: if attempting to place a card on a non-empty CardPosition, all card positions are now locked
 
 public class Card : MonoBehaviour
