@@ -108,7 +108,7 @@ namespace CardManager
 					{
 						if (hit.transform.GetComponent<CardPosition>() != null)
 						{
-							if (cardPosition == null && card.CanBePlaced(hit.transform.GetComponent<CardPosition>()))
+							if (cardPosition == null && CanBePlaced(card, hit.transform.GetComponent<CardPosition>()))
 							{
 								cardPosition = hit.transform.GetComponent<CardPosition>();
 								cardPosition.Lights(true);
@@ -162,7 +162,7 @@ namespace CardManager
 		{
 			foreach (CardPosition cardPosition in GameObject.FindObjectsOfType(typeof(CardPosition)))
 			{
-				if (!card.CanBePlaced(cardPosition))
+				if (!CanBePlaced(card, cardPosition))
 				{
 					cardPosition.RedAlert(true);
 				}
@@ -171,6 +171,31 @@ namespace CardManager
 					cardPosition.RedAlert(false);
 				}
 			}
+		}
+		
+		// todo: tidy and expand on conditions herein
+		public static bool CanBePlaced(Card card, CardPosition cardPosition)
+		{
+			if (card.creatureData != null)
+			{
+				if (card.creatureData.isLockedFront)
+				{
+					if (cardPosition.IsFrontLine())
+					{
+						return true;
+					}
+				}
+				else if (!card.creatureData.isLockedBack && !card.creatureData.isLockedFront)
+				{
+					return true;
+				}
+			}
+			else if (card.actionData)
+			{
+				return true;
+			}
+        
+			return false;
 		}
 	}
 }

@@ -14,6 +14,6 @@ public class CardData : ScriptableObject
     public string title;
     public string ID;
     public Texture imageTexture;
-    public string description;
+    [TextArea(5, 10)]   public string description;
     [TextArea(10,30)]   public string notes;
 }

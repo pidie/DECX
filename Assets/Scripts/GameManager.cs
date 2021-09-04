@@ -29,15 +29,19 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        PlaceCompanions();
+        SpawnCompanions();
     }
 
     private void Update()
     {
-        CardsInStock.text = cardDatas.Count.ToString();
         if (hand.companionsPlaced)
         {
             drawCardButton.interactable = true;
+            CardsInStock.text = $"Cards Left: {cardDatas.Count.ToString()}";
+        }
+        else
+        {
+            CardsInStock.text = "Place your Companions";
         }
     }
 
@@ -45,12 +49,12 @@ public class GameManager : MonoBehaviour
     {
         if (hand.cardsInHand.Count >= hand.maxCardsInHand)
         {
-            Debug.Log($"Cannot have more than {hand.maxCardsInHand} cards in Hand.");
+            Debug.LogWarning($"Cannot have more than {hand.maxCardsInHand} cards in Hand.");
             return;
         }
         else if (cardDatas.Count < 1)
         {
-            Debug.LogWarning("deck is empty");
+            Debug.LogWarning("Deck is empty.");
             return;
         }
         else
@@ -64,11 +68,10 @@ public class GameManager : MonoBehaviour
         hand.cardsInHand.Add(c);
     }
 
-    private void PlaceCompanions()
+    private void SpawnCompanions()
     {
         drawCardButton.interactable = false;
         TMP_Text messageBox = GameObject.Find("MessageBox").GetComponent<TMP_Text>();
-        // CardPosition dropOff = null;
 
         List<Card> cards = new List<Card>();
 

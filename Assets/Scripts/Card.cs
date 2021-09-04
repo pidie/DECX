@@ -68,6 +68,7 @@ public class Card : MonoBehaviour
     private void OnMouseDown()
     {
         CardManager.ActivateCard.PaintValidCardPositions(this);
+        
         // click the card from the hand
         if (transform.parent.GetComponent<Hand>())
         {
@@ -116,26 +117,6 @@ public class Card : MonoBehaviour
                 Debug.LogWarning($"A card ({placeOnTable.cardInPosition.title}) is already here.");
             }
         }
-    }
-
-    public bool CanBePlaced(CardPosition cardPosition)
-    {
-        if (creatureData != null)
-        {
-            if (creatureData.isLockedFront)
-            {
-                if (cardPosition.IsFrontLine())
-                {
-                    return true;
-                }
-            }
-        }
-        else if (actionData)
-        {
-            return true;
-        }
-        
-        return false;
     }
 
     private void CheckVitals()
