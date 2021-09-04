@@ -19,10 +19,8 @@ public class Card : MonoBehaviour
     public string title;
     public string ID;
     public int energyCost;
-    public int healthPoints;
-    public int healthPointModifier;
-    public int damageAmount;
-    public int damageAmountModifier;
+    public int healthPoints;    public int healthPointModifier;
+    public int damageAmount;    public int damageAmountModifier;
 
     [Header("Flavor Info")]
     public string description;
@@ -93,44 +91,28 @@ public class Card : MonoBehaviour
         if (isBeingHeld == true)
         {
             isBeingHeld = false;
-            if (placeOnTable == null)
-            {
-                // do nothing
-            }
+            if (placeOnTable == null) { }
             else if (placeOnTable != null && !placeOnTable.isOccupied)
             {
-                InstantiateCard.PlaceCardOnTableFromHand(this, placeOnTable);
-                hand.cardsInHand.Remove(this);
-                Destroy(gameObject);
+                PlayerManager player = GameObject.Find("Player").GetComponent<PlayerManager>();
+
+                if (player.currentEnergyPoints < energyCost)
+                {
+                    Debug.LogWarning("You do not have enough energy to play this card.");
+                }
+                else
+                {
+                    player.currentEnergyPoints -= energyCost;
+                    InstantiateCard.PlaceCardOnTableFromHand(this, placeOnTable);
+                    hand.cardsInHand.Remove(this);
+                    Destroy(gameObject);
+                }
             }
             else if (placeOnTable.isOccupied)
             {
                 Debug.LogWarning($"A card ({title}) is already here.");
             }
         }
-    }
-    
-    public void PlayCard()
-    {
-        if (actionData.summonCreature)
-        {
-            creatureData = actionData.creatureSummoned;
-            healthPointModifier = actionData.modifyHealth;
-            damageAmountModifier = actionData.modifyDamage;
-            actionData = null;
-        }
-    }
-
-    // rename this - maybe expand on it so it's its own class?
-    public string ModifyTextForValue(string description)
-    {
-        string exception = "#!X:DMG";
-        
-        if (description.Contains(exception))
-        {
-            description = description.Replace(exception, "5 Fire");
-        }
-        return description;
     }
 
     private void CheckVitals()

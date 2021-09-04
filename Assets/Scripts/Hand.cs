@@ -7,7 +7,7 @@ using UnityEngine;
 public class Hand : MonoBehaviour
 {
 	public List<Card> cardsInHand;
-	[Range(0, 12)]	public float maxCardsInHand;
+	[Range(0, 12)]	public int maxCardsInHand;
 	
 	[CanBeNull] public CardPosition dropOff { get; private set; }
 

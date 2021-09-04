@@ -29,16 +29,23 @@ public class GameManager : MonoBehaviour
     public void CreateNewCard()
     {
         Hand hand = GameObject.Find("Hand").GetComponent<Hand>();
-        
-        if (cardDatas.Count < 1)
+
+        if (hand.cardsInHand.Count >= hand.maxCardsInHand)
+        {
+            Debug.Log($"Cannot have more than {hand.maxCardsInHand} cards in Hand.");
+            return;
+        }
+        else if (cardDatas.Count < 1)
         {
             Debug.LogWarning("deck is empty");
             return;
         }
-        GameObject newCard = Instantiate(cardPrefab, gameObject.transform);
-        Card c = newCard.GetComponent<Card>();
-        c.actionData = cardDatas[0];
-        newCard.transform.parent = hand.transform;
+        else
+        {
+            
+        }
+        
+        Card c = CardManager.InstantiateCard.CreateNewCard(hand.transform, cardDatas[0]);
         
         cardDatas.Remove(cardDatas[0]);
         hand.cardsInHand.Add(c);
