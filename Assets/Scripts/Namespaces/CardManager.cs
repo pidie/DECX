@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CardManager
 {
-	static class InstantiateCard
+	public static class InstantiateCard
 	{
 		public static Card CreateNewCard(Transform parent, CardData_Action cardData)
 		{
@@ -29,32 +29,37 @@ namespace CardManager
 	
 		public static void InitializeCard(Card card)
 		{
-			if (card.actionData != null)
+			if (!card.initData)
 			{
-				card.title = card.actionData.title;
-				card.ID = card.actionData.ID;
-				card.energyCost = card.actionData.energyCost;
-				card.description = card.actionData.description;
-				card.image.texture = card.actionData.imageTexture;
+				if (card.actionData != null)
+				{
+					card.title = card.actionData.title;
+					card.ID = card.actionData.ID;
+					card.energyCost = card.actionData.energyCost;
+					card.description = card.actionData.description;
+					card.image.texture = card.actionData.imageTexture;
 
-				card.gameObject.name = card.title;
-				card.healthPointsDisplay.SetActive(false);
-				card.damageAmountDisplay.SetActive(false);
+					card.gameObject.name = card.title;
+					card.healthPointsDisplay.SetActive(false);
+					card.damageAmountDisplay.SetActive(false);
 
-				card.creatureData = null;
-			}
-			else if (card.creatureData)
-			{
-				card.title = card.creatureData.title;
-				card.ID = card.creatureData.ID;
-				card.healthPoints = card.creatureData.healthPoints + card.healthPointModifier;
-				card.damageAmount = card.creatureData.damageAmount + card.damageAmountModifier;
-				card.description = card.creatureData.description;
-				card.image.texture = card.creatureData.imageTexture;
-                
-				card.gameObject.name = card.title;
-				card.healthPointsDisplay.SetActive(true);
-				card.damageAmountDisplay.SetActive(true);
+					card.creatureData = null;
+				}
+				else if (card.creatureData)
+				{
+					card.title = card.creatureData.title;
+					card.ID = card.creatureData.ID;
+					card.healthPoints = card.creatureData.healthPoints + card.healthPointModifier;
+					card.damageAmount = card.creatureData.damageAmount + card.damageAmountModifier;
+					card.description = card.creatureData.description;
+					card.image.texture = card.creatureData.imageTexture;
+
+					card.gameObject.name = card.title;
+					card.healthPointsDisplay.SetActive(true);
+					card.damageAmountDisplay.SetActive(true);
+				}
+
+				card.initData = true;
 			}
 		}
 		
@@ -68,7 +73,7 @@ namespace CardManager
 		}
 	}
 
-	static class ActivateCard
+	public static class ActivateCard
 	{
 		public static CardPosition HoldingCard(List<Card> cards, CardPosition cardPosition)
 		{
@@ -199,6 +204,21 @@ namespace CardManager
 			foreach (CardPosition cp in GameObject.FindObjectsOfType(typeof(CardPosition)))
 			{
 				cp.RedAlert(false);
+			}
+		}
+	}
+
+	public static class CreatureCard
+	{
+		public static void CheckVitals(Card card)
+		{
+			if (card.creatureData)
+			{
+				if (card.healthPoints < 1)
+				{
+					card.placeOnTable.isOccupied = false;
+					MonoBehaviour.Destroy(card.gameObject);
+				}
 			}
 		}
 	}

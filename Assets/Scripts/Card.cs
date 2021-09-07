@@ -7,8 +7,8 @@ using TMPro;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
-using CardManager;
-using UIManager;
+using DECX.CardManager;
+using DECX.UIManager;
 
 // todo: figure out why clicks don't always register when on table
 // todo: move some of the functionality to CardManager
@@ -22,16 +22,16 @@ public class Card : MonoBehaviour
     public int energyCost;
     public int healthPoints;    public int healthPointModifier;
     public int damageAmount;    public int damageAmountModifier;
-
+    
     [Header("Flavor Info")]
     public string description;
 
     [Header("Dev Info")]
     public CardData_Action actionData;
     [CanBeNull] public CardData_Creature creatureData;
-    private bool initData;
+    public bool initData;
     public bool isBeingHeld;
-    [CanBeNull] private CardPosition placeOnTable;
+    [CanBeNull] public CardPosition placeOnTable;
 
     [Header("Display")]
     public TMP_Text Title;
@@ -52,17 +52,8 @@ public class Card : MonoBehaviour
 
     private void Update()
     {
-        if (!initData)
-        {
-            InstantiateCard.InitializeCard(this);
-            initData = true;
-        }
-
-        if (creatureData)
-        {
-            CheckVitals();
-        }
-        
+        InstantiateCard.InitializeCard(this);
+        CreatureCard.CheckVitals(this);
         InstantiateCard.DrawCardToScreen(this);
     }
 
@@ -108,7 +99,7 @@ public class Card : MonoBehaviour
             }
             else if (placeOnTable.isOccupied)
             {
-                Debug.LogWarning($"A card ({placeOnTable.cardInPosition.title}) is already here.");
+                UIErrorMessage.DisplayErrorMessage(GameError.CardPositionNotEmpty);
             }
             else if (placeOnTable != hand.dropOff || (placeOnTable != null && !placeOnTable.isOccupied))
             {
@@ -116,8 +107,7 @@ public class Card : MonoBehaviour
 
                 if (player.currentEnergyPoints < energyCost)
                 {
-                    string errorMessage = "You do not have enough energy to play this card.";
-                    UIErrorMessage.DisplayErrorMessage(errorMessage);
+                    UIErrorMessage.DisplayErrorMessage(GameError.PlayerNotEnoughEnergy);
                 } 
                 else
                 {
@@ -130,15 +120,6 @@ public class Card : MonoBehaviour
             
             ActivateCard.RedAlertStandDown();
             placeOnTable = null;
-        }
-    }
-
-    private void CheckVitals()
-    {
-        if (healthPoints < 1)
-        {
-            placeOnTable.isOccupied = false;
-            Destroy(this.gameObject);
         }
     }
 }

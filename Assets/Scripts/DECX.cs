@@ -1,0 +1,263 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+
+namespace DECX
+{
+	namespace CardManager
+	{
+		public static class InstantiateCard
+		{
+			public static Card CreateNewCard(Transform parent, CardData_Action cardData)
+			{
+				GameObject cardPrefab = Resources.Load<GameObject>("Prefabs/Card");
+				GameObject newCard = MonoBehaviour.Instantiate(cardPrefab, parent);
+				Card card = newCard.GetComponent<Card>();
+
+				card.actionData = cardData;
+				return card;
+			}
+
+			public static Card CreateNewCard(Transform parent, CardData_Creature cardData)
+			{
+				GameObject cardPrefab = Resources.Load<GameObject>("Prefabs/Card");
+				GameObject newCard = MonoBehaviour.Instantiate(cardPrefab, parent);
+				Card card = newCard.GetComponent<Card>();
+
+				card.creatureData = cardData;
+				return card;
+			}
+
+			public static void InitializeCard(Card card)
+			{
+				if (!card.initData)
+				{
+					if (card.actionData != null)
+					{
+						card.title = card.actionData.title;
+						card.ID = card.actionData.ID;
+						card.energyCost = card.actionData.energyCost;
+						card.description = card.actionData.description;
+						card.image.texture = card.actionData.imageTexture;
+
+						card.gameObject.name = card.title;
+						card.healthPointsDisplay.SetActive(false);
+						card.damageAmountDisplay.SetActive(false);
+
+						card.creatureData = null;
+					}
+					else if (card.creatureData)
+					{
+						card.title = card.creatureData.title;
+						card.ID = card.creatureData.ID;
+						card.healthPoints = card.creatureData.healthPoints + card.healthPointModifier;
+						card.damageAmount = card.creatureData.damageAmount + card.damageAmountModifier;
+						card.description = card.creatureData.description;
+						card.image.texture = card.creatureData.imageTexture;
+
+						card.gameObject.name = card.title;
+						card.healthPointsDisplay.SetActive(true);
+						card.damageAmountDisplay.SetActive(true);
+					}
+
+					card.initData = true;
+				}
+			}
+
+			public static void DrawCardToScreen(Card card)
+			{
+				card.Title.text = card.title;
+				card.EnergyCost.text = card.energyCost.ToString();
+				card.HealthPoints.text = card.healthPoints.ToString();
+				card.DamageAmount.text = card.damageAmount.ToString();
+				card.Description.text = ActivateCard.ModifyTextForValue(card.description);
+			}
+		}
+
+		public static class ActivateCard
+		{
+			public static CardPosition HoldingCard(List<Card> cards, CardPosition cardPosition)
+			{
+				foreach (Card card in cards)
+				{
+					if (card.isBeingHeld)
+					{
+						Vector3 pos = new Vector3(Input.mousePosition.x, Input.mousePosition.y,
+							Camera.main.WorldToScreenPoint(card.transform.position).z - 0.5f);
+						card.transform.position = Camera.main.ScreenToWorldPoint(pos);
+
+						float rayLength = 80f;
+
+						Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+						Debug.DrawRay(ray.origin, ray.direction * rayLength);
+
+						RaycastHit[] hits;
+						hits = Physics.RaycastAll(ray, rayLength);
+						bool noCardPosition = true;
+
+						foreach (RaycastHit hit in hits)
+						{
+							CardPosition hitPosition = hit.transform.GetComponent<CardPosition>();
+							if (hitPosition != null)
+							{
+								if (cardPosition == null && CanBePlaced(card, hitPosition))
+								{
+									cardPosition = hitPosition;
+									cardPosition.Lights(true);
+								}
+
+								noCardPosition = false;
+							}
+						}
+
+						if (noCardPosition)
+						{
+							if (cardPosition != null)
+							{
+								cardPosition.Lights(false);
+							}
+
+							cardPosition = null;
+						}
+					}
+				}
+
+				return cardPosition;
+			}
+
+			public static void PlaceCard(Card card, CardPosition cardPosition)
+			{
+				Card newCard = MonoBehaviour.Instantiate(card, cardPosition.transform.position,
+					Quaternion.Euler(90, 0, 180),
+					cardPosition.transform.parent.transform);
+				cardPosition.isOccupied = true;
+				ActivateCard.PlayCard(newCard);
+				cardPosition.Lights(false);
+				cardPosition.cardInPosition = card;
+			}
+
+			public static string ModifyTextForValue(string description)
+			{
+				string exception = "#!X:DMG";
+
+				if (description.Contains(exception))
+				{
+					description = description.Replace(exception, "5 Fire");
+				}
+
+				return description;
+			}
+
+			public static void PlayCard(Card card)
+			{
+				if (card.actionData != null && card.actionData.summonCreature)
+				{
+					card.creatureData = card.actionData.creatureSummoned;
+					card.healthPointModifier = card.actionData.modifyHealth;
+					card.damageAmountModifier = card.actionData.modifyDamage;
+					card.actionData = null;
+				}
+				else
+				{
+
+				}
+			}
+
+			public static void PaintValidCardPositions(Card card)
+			{
+				foreach (CardPosition cardPosition in GameObject.FindObjectsOfType(typeof(CardPosition)))
+				{
+					if (!CanBePlaced(card, cardPosition))
+					{
+						cardPosition.RedAlert(true);
+					}
+					else
+					{
+						cardPosition.RedAlert(false);
+					}
+				}
+			}
+
+// todo: tidy and expand on conditions herein
+			public static bool CanBePlaced(Card card, CardPosition cardPosition)
+			{
+				if (card.creatureData != null)
+				{
+					if (card.creatureData.isLockedBack && card.creatureData.isLockedFront)
+					{
+						return false;
+					}
+					else if ((card.creatureData.isLockedFront && cardPosition.IsFrontLine()) ||
+					         (card.creatureData.isLockedBack && !cardPosition.IsFrontLine()) ||
+					         (!card.creatureData.isLockedBack && !card.creatureData.isLockedFront))
+					{
+						return true;
+					}
+
+				}
+				else if (card.actionData)
+				{
+					return true;
+				}
+
+				return false;
+			}
+
+			public static void RedAlertStandDown()
+			{
+				foreach (CardPosition cp in GameObject.FindObjectsOfType(typeof(CardPosition)))
+				{
+					cp.RedAlert(false);
+				}
+			}
+		}
+
+		public static class CreatureCard
+		{
+			public static void CheckVitals(Card card)
+			{
+				if (card.creatureData)
+				{
+					if (card.healthPoints < 1)
+					{
+						card.placeOnTable.isOccupied = false;
+						MonoBehaviour.Destroy(card.gameObject);
+					}
+				}
+			}
+		}
+	}
+	
+	enum GameError
+    {
+    	CardPositionNotEmpty,
+    	PlayerNotEnoughEnergy
+    }
+    namespace UIManager
+    {
+    	static class UIErrorMessage
+    	{
+    		public static void DisplayErrorMessage(GameError message, float time = 2.0f)
+    		{
+    			string msg = CompileErrorMessage(message);
+    			TMP_Text errorMessageBox = GameObject.Find("ErrorMessage").GetComponent<TMP_Text>();
+    			float alpha = errorMessageBox.alpha;
+    			errorMessageBox.text = msg;
+    		}
+    
+    		private static string CompileErrorMessage(GameError message)
+    		{
+    			switch (message)
+    			{
+    				case GameError.CardPositionNotEmpty:
+    					return "Cannot play this card here";
+    				case GameError.PlayerNotEnoughEnergy:
+    					return "You do not have enough energy to play this card";
+    				default:
+    					return "default_error_message";
+    			}
+    		}
+    	}
+    }
+}
