@@ -66,16 +66,6 @@ namespace CardManager
 			card.DamageAmount.text = card.damageAmount.ToString();
 			card.Description.text = ActivateCard.ModifyTextForValue(card.description);
 		}
-		
-		public static void PlaceCardOnTableFromHand(Card card, CardPosition cardPosition)
-        {
-        	Card newCard = MonoBehaviour.Instantiate(card, cardPosition.transform.position, Quaternion.Euler(90, 0, 180),
-        		cardPosition.transform.parent.transform);
-        	cardPosition.isOccupied = true;
-        	ActivateCard.PlayCard(newCard);
-            cardPosition.Lights(false);
-            cardPosition.cardInPosition = card;
-        }
 	}
 
 	static class ActivateCard
@@ -101,11 +91,12 @@ namespace CardManager
 
 					foreach (RaycastHit hit in hits)
 					{
-						if (hit.transform.GetComponent<CardPosition>() != null)
+						CardPosition hitPosition = hit.transform.GetComponent<CardPosition>();
+						if (hitPosition != null)
 						{
-							if (cardPosition == null && CanBePlaced(card, hit.transform.GetComponent<CardPosition>()))
+							if (cardPosition == null && CanBePlaced(card, hitPosition))
 							{
-								cardPosition = hit.transform.GetComponent<CardPosition>();
+								cardPosition = hitPosition;
 								cardPosition.Lights(true);
 							}
 
@@ -125,6 +116,16 @@ namespace CardManager
 			}
 
 			return cardPosition;
+		}
+		
+		public static void PlaceCard(Card card, CardPosition cardPosition)
+		{
+			Card newCard = MonoBehaviour.Instantiate(card, cardPosition.transform.position, Quaternion.Euler(90, 0, 180),
+				cardPosition.transform.parent.transform);
+			cardPosition.isOccupied = true;
+			ActivateCard.PlayCard(newCard);
+			cardPosition.Lights(false);
+			cardPosition.cardInPosition = card;
 		}
 		
 		public static string ModifyTextForValue(string description)

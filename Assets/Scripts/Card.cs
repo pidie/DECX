@@ -8,11 +8,11 @@ using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
 using CardManager;
+using UIManager;
 
 // todo: figure out why clicks don't always register when on table
 // todo: move some of the functionality to CardManager
-// todo: if attempting to place a card on a non-empty CardPosition, all card positions are now locked
-// todo: RedA;ertStandDown when clicking a card in a CardPosition that has placement restrictions
+// todo: RedAlertStandDown when clicking a card in a CardPosition that has placement restrictions
 
 public class Card : MonoBehaviour
 {
@@ -68,7 +68,7 @@ public class Card : MonoBehaviour
 
     private void OnMouseDown()
     {
-        CardManager.ActivateCard.PaintValidCardPositions(this);
+        ActivateCard.PaintValidCardPositions(this);
         
         // click the card from the hand
         if (transform.parent.GetComponent<Hand>())
@@ -79,13 +79,18 @@ public class Card : MonoBehaviour
         // click a card on the table
         else if (transform.parent.GetChild(0).GetComponent<CardPosition>())
         {
+            if (transform.parent.GetChild(0).GetComponent<CardPosition>().cardInPosition == this.transform)
+            {
+                Debug.Log("hiiiiii");
+                ActivateCard.RedAlertStandDown();
+            }
             healthPoints -= 1;
         }
     }
 
     private void OnMouseUp()
     {
-        CardManager.ActivateCard.PaintValidCardPositions(this);
+        ActivateCard.PaintValidCardPositions(this);
         Hand hand = GameObject.Find("Hand").GetComponent<Hand>();
         if (placeOnTable == null)
         {
@@ -95,30 +100,36 @@ public class Card : MonoBehaviour
         if (isBeingHeld == true)
         {
             isBeingHeld = false;
+            
             if (placeOnTable == null) { }
-            else if (placeOnTable != null && !placeOnTable.isOccupied)
+            else if (placeOnTable != hand.dropOff)
+            {
+                Debug.Log("bleh");
+            }
+            else if (placeOnTable.isOccupied)
+            {
+                Debug.LogWarning($"A card ({placeOnTable.cardInPosition.title}) is already here.");
+            }
+            else if (placeOnTable != hand.dropOff || (placeOnTable != null && !placeOnTable.isOccupied))
             {
                 PlayerManager player = GameObject.Find("Player").GetComponent<PlayerManager>();
 
                 if (player.currentEnergyPoints < energyCost)
                 {
-                    Debug.LogWarning("You do not have enough energy to play this card.");
-                }
+                    string errorMessage = "You do not have enough energy to play this card.";
+                    UIErrorMessage.DisplayErrorMessage(errorMessage);
+                } 
                 else
                 {
                     player.currentEnergyPoints -= energyCost;
-                    InstantiateCard.PlaceCardOnTableFromHand(this, placeOnTable);
+                    ActivateCard.PlaceCard(this, placeOnTable);
                     hand.cardsInHand.Remove(this);
                     Destroy(gameObject);
                 }
             }
-            else if (placeOnTable.isOccupied)
-            {
-                Debug.Log(placeOnTable.name);
-                Debug.LogWarning($"A card ({placeOnTable.cardInPosition.title}) is already here.");
-            }
             
             ActivateCard.RedAlertStandDown();
+            placeOnTable = null;
         }
     }
 

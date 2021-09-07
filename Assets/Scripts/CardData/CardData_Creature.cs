@@ -14,7 +14,7 @@ public class CardData_Creature : CardData
     [HideInInspector]   public typeOfData Creature;
 
     [Header("Creature Data")] 
-    public List<CardData_Action> actions;
+    public List<string> keywords;
     
     [Header("Creature Defense")]
     public int healthPoints;
@@ -27,6 +27,7 @@ public class CardData_Creature : CardData
     public int damageAmount;
     
     [Header("Creature Actions")]
+    public List<CardData_Action> actions;
     public int numOfActions;
     public int energyPoints;
     

@@ -8,6 +8,7 @@ public class PlayerManager : MonoBehaviour
 {
     public int currentEnergyPoints;
     public int maxEnergyPoints;
+    public int maxNumberOfCompanions;
 
     public TMP_Text EnergyPoints;
 
@@ -15,6 +16,7 @@ public class PlayerManager : MonoBehaviour
     {
         maxEnergyPoints = 4;
         currentEnergyPoints = maxEnergyPoints;
+        maxNumberOfCompanions = 2;
     }
 
     private void Update()
