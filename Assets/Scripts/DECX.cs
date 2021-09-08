@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 namespace DECX
 {
@@ -179,7 +182,7 @@ namespace DECX
 				}
 			}
 
-// todo: tidy and expand on conditions herein
+			// todo: tidy and expand on conditions herein
 			public static bool CanBePlaced(Card card, CardPosition cardPosition)
 			{
 				if (card.creatureData != null)
@@ -232,10 +235,39 @@ namespace DECX
 	enum GameError
     {
     	CardPositionNotEmpty,
-    	PlayerNotEnoughEnergy
+        PlayerDeckIsEmpty,
+    	PlayerNotEnoughEnergy,
+        PlayerTooManyCardsInHand
     }
     namespace UIManager
     {
+	    public static class HUD
+	    {
+		    // todo: make the button click magic happen here, and the instantiation happen in InstantiateCard
+		    public static void AddCardToHand(Hand hand)
+		    {
+			    
+		    }
+
+		    public static void FadeErrorMessages(TMP_Text errorMessage)
+		    {
+			    ///	if the message is not blank, drop alpha to 0 over 2 seconds.
+			    if (errorMessage.text != "")
+			    {
+				    float initialAlpha = errorMessage.alpha;
+				    while (errorMessage.alpha > 0)
+				    {
+					    // errorMessage.alpha = Mathf.Lerp(1, 0, errorMessage.alpha);
+					    // errorMessage.color = new Color(color.r, color.g, color.b, Mathf.Lerp(1, 0, alpha));
+					    errorMessage.alpha -= 2.0f * Time.deltaTime;
+				    }
+
+				    errorMessage.text = "";
+				    errorMessage.alpha = initialAlpha;
+			    }
+		    }
+	    }
+	    
     	static class UIErrorMessage
     	{
     		public static void DisplayErrorMessage(GameError message, float time = 2.0f)
@@ -254,10 +286,58 @@ namespace DECX
     					return "Cannot play this card here";
     				case GameError.PlayerNotEnoughEnergy:
     					return "You do not have enough energy to play this card";
+                    case GameError.PlayerTooManyCardsInHand:
+	                    return "Cannot have more than !#X:CARDS_IN_HAND cards in your hand at once";
+                    case GameError.PlayerDeckIsEmpty:
+	                    return "No cards left in deck";
     				default:
     					return "default_error_message";
     			}
     		}
     	}
+    }
+
+    namespace EventManager
+    {
+	    public static class HandEvents
+	    {
+		    [CanBeNull]
+		    public static Card AddCardToHand(List<CardData_Action> deck, Hand hand)
+		    {
+			    if (hand.cardsInHand.Count >= hand.maxCardsInHand)
+			    {
+				    UIManager.UIErrorMessage.DisplayErrorMessage(GameError.PlayerTooManyCardsInHand);
+			    }
+			    else if (deck.Count < 1)
+			    {
+				    UIManager.UIErrorMessage.DisplayErrorMessage(GameError.PlayerDeckIsEmpty);
+			    }
+			    else
+			    {
+				    return CardManager.InstantiateCard.CreateNewCard(hand.transform, deck[0]);
+			    }
+
+			    return null;
+		    }
+		    
+		    [CanBeNull]
+		    public static Card AddCardToHand(List<CardData_Creature> deck, Hand hand)
+		    {
+			    if (hand.cardsInHand.Count >= hand.maxCardsInHand)
+			    {
+				    UIManager.UIErrorMessage.DisplayErrorMessage(GameError.PlayerTooManyCardsInHand);
+			    }
+			    else if (deck.Count < 1)
+			    {
+				    UIManager.UIErrorMessage.DisplayErrorMessage(GameError.PlayerDeckIsEmpty);
+			    }
+			    else
+			    {
+				    return CardManager.InstantiateCard.CreateNewCard(hand.transform, deck[0]);
+			    }
+
+			    return null;
+		    }
+	    }
     }
 }
