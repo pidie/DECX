@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DECX.UIManager;
 
 public class GameManager : MonoBehaviour
 {
@@ -49,17 +49,13 @@ public class GameManager : MonoBehaviour
     {
         if (hand.cardsInHand.Count >= hand.maxCardsInHand)
         {
-            Debug.LogWarning($"Cannot have more than {hand.maxCardsInHand} cards in Hand.");
+            UIErrorMessage.DisplayErrorMessage(DECX.GameError.PlayerTooManyCardsInHand);
             return;
         }
         else if (cardDatas.Count < 1)
         {
-            Debug.LogWarning("Deck is empty.");
+            UIErrorMessage.DisplayErrorMessage(DECX.GameError.PlayerDeckIsEmpty);
             return;
-        }
-        else
-        {
-            
         }
         
         Card c = CardManager.InstantiateCard.CreateNewCard(hand.transform, cardDatas[0]);
