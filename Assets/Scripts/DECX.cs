@@ -68,6 +68,7 @@ namespace DECX
 				}
 			}
 
+			// todo: move this to EventManager
 			public static void DrawCardToScreen(Card card)
 			{
 				card.Title.text = card.title;
@@ -78,6 +79,48 @@ namespace DECX
 			}
 		}
 
+		enum dtTag
+		{
+			X_DMG,
+			X_HP_,
+			X_HPM
+		}
+		public static class DynamicText
+		{
+			/// using regex-esque codification, this allows predefined strings to be dynamically altered in game.
+			private static string DecodeTag(dtTag tag, Card card)
+			{
+				switch (tag)
+				{
+					case X_DMG:
+						return card.damage.ToString();
+					case X_HP_:
+						return card.health.ToString();
+					case X_HPM:
+						return card.maximumHealth.ToString();
+				}
+			}
+
+			public static string Rewrite(string text, Card card)
+			{
+				string marker = "#!";
+				if (text.Contains(marker))
+				{
+					string tagString = text.Substring(text.IndexOf(marker) + 2, 5);
+					foreach (dtTag t in dtTag)
+					{
+						if (t.ToString() == tagString)
+						{
+							tagString = DecodeTag(t, card);
+						}
+						//replace marker and tag with the proper value
+					}
+				}
+				return text;
+			}
+		}
+
+		// todo: disolve this class - it has no purpose. Most of these methods are events anyway
 		public static class ActivateCard
 		{
 			public static CardPosition HoldingCard(List<Card> cards, CardPosition cardPosition)
@@ -140,6 +183,7 @@ namespace DECX
 				cardPosition.cardInPosition = card;
 			}
 
+			// todo: make this a class of its own - unless there's a workaround within the Unity builder.
 			public static string ModifyTextForValue(string description)
 			{
 				string exception = "#!X:DMG";
@@ -216,6 +260,11 @@ namespace DECX
 			}
 		}
 
+		public static class ActionCard
+		{
+			
+		}
+		
 		public static class CreatureCard
 		{
 			public static void CheckVitals(Card card)
@@ -232,19 +281,12 @@ namespace DECX
 		}
 	}
 	
-	enum GameError
-    {
-    	CardPositionNotEmpty,
-        PlayerDeckIsEmpty,
-    	PlayerNotEnoughEnergy,
-        PlayerTooManyCardsInHand
-    }
     namespace UIManager
     {
 	    public static class HUD
 	    {
 		    // todo: make the button click magic happen here, and the instantiation happen in InstantiateCard
-		    public static void AddCardToHand(Hand hand)
+		    public static void DrawCard(Button button, Hand hand)
 		    {
 			    
 		    }
@@ -268,6 +310,13 @@ namespace DECX
 		    }
 	    }
 	    
+	    enum GameError
+	    {
+		    CardPositionNotEmpty,
+		    PlayerDeckIsEmpty,
+		    PlayerNotEnoughEnergy,
+		    PlayerTooManyCardsInHand
+	    }
     	static class UIErrorMessage
     	{
     		public static void DisplayErrorMessage(GameError message, float time = 2.0f)
