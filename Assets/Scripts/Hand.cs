@@ -28,7 +28,7 @@ public class Hand : MonoBehaviour
 	private void Update()
 	{
 		ArrangeCardsInHand();
-		dropOff = CardManager.ActivateCard.HoldingCard(cardsInHand, dropOff);
+		dropOff = DECX.CardManager.ActivateCard.HoldingCard(cardsInHand, dropOff);
 		if (cardsInHand.Count < 1) { }
 		else if (cardsInHand[0].creatureData != null && cardsInHand[0].creatureData.GetType() == typeof(
 			CardData_Creature_Companion))

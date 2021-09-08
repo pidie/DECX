@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DECX;
 using DECX.UIManager;
 
 public class GameManager : MonoBehaviour
@@ -58,7 +59,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         
-        Card c = CardManager.InstantiateCard.CreateNewCard(hand.transform, cardDatas[0]);
+        Card c = DECX.CardManager.InstantiateCard.CreateNewCard(hand.transform, cardDatas[0]);
         
         cardDatas.Remove(cardDatas[0]);
         hand.cardsInHand.Add(c);
@@ -73,7 +74,7 @@ public class GameManager : MonoBehaviour
 
         foreach (CardData_Creature_Companion companion in companions)
         {
-            Card card = CardManager.InstantiateCard.CreateNewCard(hand.transform, companion);
+            Card card = DECX.CardManager.InstantiateCard.CreateNewCard(hand.transform, companion);
             hand.cardsInHand.Add(card);
         }
         companions.Clear();
