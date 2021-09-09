@@ -50,12 +50,12 @@ public class GameManager : MonoBehaviour
     {
         if (hand.cardsInHand.Count >= hand.maxCardsInHand)
         {
-            UIErrorMessage.DisplayErrorMessage(DECX.GameError.PlayerTooManyCardsInHand);
+            UIErrorMessage.DisplayErrorMessage(GameError.PlayerTooManyCardsInHand);
             return;
         }
         else if (cardDatas.Count < 1)
         {
-            UIErrorMessage.DisplayErrorMessage(DECX.GameError.PlayerDeckIsEmpty);
+            UIErrorMessage.DisplayErrorMessage(GameError.PlayerDeckIsEmpty);
             return;
         }
         

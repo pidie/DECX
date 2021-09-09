@@ -92,12 +92,14 @@ namespace DECX
 			{
 				switch (tag)
 				{
-					case X_DMG:
-						return card.damage.ToString();
-					case X_HP_:
-						return card.health.ToString();
-					case X_HPM:
-						return card.maximumHealth.ToString();
+					case dtTag.X_DMG:
+						return card.damageAmount.ToString();
+					case dtTag.X_HP_:
+						return card.healthPoints.ToString();
+					case dtTag.X_HPM:
+						return card.healthPointModifier.ToString();
+					default:
+						return null;
 				}
 			}
 
@@ -107,7 +109,7 @@ namespace DECX
 				if (text.Contains(marker))
 				{
 					string tagString = text.Substring(text.IndexOf(marker) + 2, 5);
-					foreach (dtTag t in dtTag)
+					foreach (dtTag t in Enum.GetValues(typeof(dtTag)))
 					{
 						if (t.ToString() == tagString)
 						{
@@ -355,11 +357,11 @@ namespace DECX
 		    {
 			    if (hand.cardsInHand.Count >= hand.maxCardsInHand)
 			    {
-				    UIManager.UIErrorMessage.DisplayErrorMessage(GameError.PlayerTooManyCardsInHand);
+				    UIManager.UIErrorMessage.DisplayErrorMessage(UIManager.GameError.PlayerTooManyCardsInHand);
 			    }
 			    else if (deck.Count < 1)
 			    {
-				    UIManager.UIErrorMessage.DisplayErrorMessage(GameError.PlayerDeckIsEmpty);
+				    UIManager.UIErrorMessage.DisplayErrorMessage(UIManager.GameError.PlayerDeckIsEmpty);
 			    }
 			    else
 			    {
@@ -374,11 +376,11 @@ namespace DECX
 		    {
 			    if (hand.cardsInHand.Count >= hand.maxCardsInHand)
 			    {
-				    UIManager.UIErrorMessage.DisplayErrorMessage(GameError.PlayerTooManyCardsInHand);
+				    UIManager.UIErrorMessage.DisplayErrorMessage(UIManager.GameError.PlayerTooManyCardsInHand);
 			    }
 			    else if (deck.Count < 1)
 			    {
-				    UIManager.UIErrorMessage.DisplayErrorMessage(GameError.PlayerDeckIsEmpty);
+				    UIManager.UIErrorMessage.DisplayErrorMessage(UIManager.GameError.PlayerDeckIsEmpty);
 			    }
 			    else
 			    {

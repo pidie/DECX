@@ -99,7 +99,7 @@ public class Card : MonoBehaviour
             }
             else if (placeOnTable.isOccupied)
             {
-                UIErrorMessage.DisplayErrorMessage(DECX.GameError.CardPositionNotEmpty);
+                UIErrorMessage.DisplayErrorMessage(GameError.CardPositionNotEmpty);
             }
             else if (placeOnTable != hand.dropOff || (placeOnTable != null && !placeOnTable.isOccupied))
             {
@@ -107,7 +107,7 @@ public class Card : MonoBehaviour
 
                 if (player.currentEnergyPoints < energyCost)
                 {
-                    UIErrorMessage.DisplayErrorMessage(DECX.GameError.PlayerNotEnoughEnergy);
+                    UIErrorMessage.DisplayErrorMessage(GameError.PlayerNotEnoughEnergy);
                 } 
                 else
                 {
