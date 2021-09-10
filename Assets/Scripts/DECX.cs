@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
+using TMPro;
 
 namespace DECX
 {
@@ -75,7 +75,7 @@ namespace DECX
 				card.EnergyCost.text = card.energyCost.ToString();
 				card.HealthPoints.text = card.healthPoints.ToString();
 				card.DamageAmount.text = card.damageAmount.ToString();
-				card.Description.text = ActivateCard.ModifyTextForValue(card.description);
+				card.Description.text = DynamicText.Rewrite(card.description, card);
 			}
 		}
 
@@ -113,9 +113,9 @@ namespace DECX
 					{
 						if (t.ToString() == tagString)
 						{
-							tagString = DecodeTag(t, card);
+							text.Replace(tagString, DecodeTag(t, card));
+							break;
 						}
-						//replace marker and tag with the proper value
 					}
 				}
 				return text;
@@ -125,55 +125,6 @@ namespace DECX
 		// todo: disolve this class - it has no purpose. Most of these methods are events anyway
 		public static class ActivateCard
 		{
-			public static CardPosition HoldingCard(List<Card> cards, CardPosition cardPosition)
-			{
-				foreach (Card card in cards)
-				{
-					if (card.isBeingHeld)
-					{
-						Vector3 pos = new Vector3(Input.mousePosition.x, Input.mousePosition.y,
-							Camera.main.WorldToScreenPoint(card.transform.position).z - 0.5f);
-						card.transform.position = Camera.main.ScreenToWorldPoint(pos);
-
-						float rayLength = 80f;
-
-						Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-						Debug.DrawRay(ray.origin, ray.direction * rayLength);
-
-						RaycastHit[] hits;
-						hits = Physics.RaycastAll(ray, rayLength);
-						bool noCardPosition = true;
-
-						foreach (RaycastHit hit in hits)
-						{
-							CardPosition hitPosition = hit.transform.GetComponent<CardPosition>();
-							if (hitPosition != null)
-							{
-								if (cardPosition == null && CanBePlaced(card, hitPosition))
-								{
-									cardPosition = hitPosition;
-									cardPosition.Lights(true);
-								}
-
-								noCardPosition = false;
-							}
-						}
-
-						if (noCardPosition)
-						{
-							if (cardPosition != null)
-							{
-								cardPosition.Lights(false);
-							}
-
-							cardPosition = null;
-						}
-					}
-				}
-
-				return cardPosition;
-			}
-
 			public static void PlaceCard(Card card, CardPosition cardPosition)
 			{
 				Card newCard = MonoBehaviour.Instantiate(card, cardPosition.transform.position,
@@ -183,19 +134,6 @@ namespace DECX
 				ActivateCard.PlayCard(newCard);
 				cardPosition.Lights(false);
 				cardPosition.cardInPosition = card;
-			}
-
-			// todo: make this a class of its own - unless there's a workaround within the Unity builder.
-			public static string ModifyTextForValue(string description)
-			{
-				string exception = "#!X:DMG";
-
-				if (description.Contains(exception))
-				{
-					description = description.Replace(exception, "5 Fire");
-				}
-
-				return description;
 			}
 
 			public static void PlayCard(Card card)
@@ -352,6 +290,55 @@ namespace DECX
     {
 	    public static class HandEvents
 	    {
+		    public static CardPosition HoldingCard(List<Card> cards, CardPosition cardPosition)
+		    {
+			    foreach (Card card in cards)
+			    {
+				    if (card.isBeingHeld)
+				    {
+					    Vector3 pos = new Vector3(Input.mousePosition.x, Input.mousePosition.y,
+						    Camera.main.WorldToScreenPoint(card.transform.position).z - 0.5f);
+					    card.transform.position = Camera.main.ScreenToWorldPoint(pos);
+
+					    float rayLength = 80f;
+
+					    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+					    Debug.DrawRay(ray.origin, ray.direction * rayLength);
+
+					    RaycastHit[] hits;
+					    hits = Physics.RaycastAll(ray, rayLength);
+					    bool noCardPosition = true;
+
+					    foreach (RaycastHit hit in hits)
+					    {
+						    CardPosition hitPosition = hit.transform.GetComponent<CardPosition>();
+						    if (hitPosition != null)
+						    {
+							    if (cardPosition == null && CardManager.ActivateCard.CanBePlaced(card, hitPosition))
+							    {
+								    cardPosition = hitPosition;
+								    cardPosition.Lights(true);
+							    }
+
+							    noCardPosition = false;
+						    }
+					    }
+
+					    if (noCardPosition)
+					    {
+						    if (cardPosition != null)
+						    {
+							    cardPosition.Lights(false);
+						    }
+
+						    cardPosition = null;
+					    }
+				    }
+			    }
+
+			    return cardPosition;
+		    }
+		    
 		    [CanBeNull]
 		    public static Card AddCardToHand(List<CardData_Action> deck, Hand hand)
 		    {

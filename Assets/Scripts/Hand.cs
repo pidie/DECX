@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
+using DECX.EventManager;
 
 public class Hand : MonoBehaviour
 {
@@ -28,7 +29,7 @@ public class Hand : MonoBehaviour
 	private void Update()
 	{
 		ArrangeCardsInHand();
-		dropOff = DECX.CardManager.ActivateCard.HoldingCard(cardsInHand, dropOff);
+		dropOff = HandEvents.HoldingCard(cardsInHand, dropOff);
 		if (cardsInHand.Count < 1) { }
 		else if (cardsInHand[0].creatureData != null && cardsInHand[0].creatureData.GetType() == typeof(
 			CardData_Creature_Companion))
