@@ -13,6 +13,7 @@ using DECX.UIManager;
 // todo: figure out why clicks don't always register when on table
 // todo: move some of the functionality to CardManager
 // todo: RedAlertStandDown when clicking a card in a CardPosition that has placement restrictions
+// todo: set up constructors and create new cards instead of recycling old cards with extra data
 
 public class Card : MonoBehaviour
 {
@@ -20,8 +21,12 @@ public class Card : MonoBehaviour
     public string title;
     public string ID;
     public int energyCost;
-    public int healthPoints;    public int healthPointModifier;
-    public int damageAmount;    public int damageAmountModifier;
+    public int healthPoints;
+    public int healthPointModifier;
+    public int baseHealthPoints;
+    public int damageAmount;
+    public int damageAmountModifier;
+    public int baseDamageAmount;
     
     [Header("Flavor Info")]
     public string description;
@@ -45,6 +50,40 @@ public class Card : MonoBehaviour
     public GameObject healthPointsDisplay;
     public GameObject damageAmountDisplay;
 
+    private Card(CardData_Action data)
+    {
+        title = data.title;
+        ID = data.ID;
+        energyCost = data.energyCost;
+        description = data.description;
+        image.texture = data.imageTexture;
+
+        gameObject.name = title;
+        energyCostDisplay.SetActive(true);
+        healthPointsDisplay.SetActive(false);
+        damageAmountDisplay.SetActive(false);
+    }
+
+    private Card(CardData_Creature data)
+    {
+        title = data.title;
+        ID = data.ID;
+        baseHealthPoints = data.healthPoints;
+        healthPointModifier = 0;
+        baseDamageAmount = data.damageAmount;
+        damageAmountModifier = 0;
+        description = data.description;
+        image.texture = data.imageTexture;
+        
+        healthPoints = healthPoints + healthPointModifier;
+        damageAmount = baseDamageAmount + damageAmountModifier;
+        
+        gameObject.name = title;
+        energyCostDisplay.SetActive(false);
+        healthPointsDisplay.SetActive(true);
+        damageAmountDisplay.SetActive(true);
+    }
+    
     private void Awake()
     {
         initData = false; isBeingHeld = false;
