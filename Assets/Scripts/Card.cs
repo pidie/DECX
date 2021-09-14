@@ -13,14 +13,20 @@ using DECX.UIManager;
 // todo: figure out why clicks don't always register when on table
 // todo: move some of the functionality to CardManager
 // todo: RedAlertStandDown when clicking a card in a CardPosition that has placement restrictions
-// todo: set up constructors and create new cards instead of recycling old cards with extra data
+// todo: move constructor logic to Awake method. Might have to make three different Card subtypes - Card_Action, Card_Creature, Card_Item, with abstract Card class
 
 public class Card : MonoBehaviour
 {
     [Header("Basic Info")]
     public string title;
     public string ID;
+    
+    [Header("ActionData Info")]
     public int energyCost;
+    public int cooldownPeriod;
+    public int range;
+    
+    [Header("CreatureData Info")]
     public int healthPoints;
     public int healthPointModifier;
     public int baseHealthPoints;
@@ -32,13 +38,13 @@ public class Card : MonoBehaviour
     public string description;
 
     [Header("Dev Info")]
-    public CardData_Action actionData;
+    [CanBeNull] public CardData_Action actionData;
     [CanBeNull] public CardData_Creature creatureData;
-    public bool initData;
+    public bool initData;   // todo: remove this
     public bool isBeingHeld;
     [CanBeNull] public CardPosition placeOnTable;
 
-    [Header("Display")]
+    [Header("Display")] 
     public TMP_Text Title;
     public TMP_Text EnergyCost;
     public TMP_Text HealthPoints;
@@ -52,12 +58,41 @@ public class Card : MonoBehaviour
 
     private Card(CardData_Action data)
     {
+        // basic info
         title = data.title;
         ID = data.ID;
+        
+        // action data
         energyCost = data.energyCost;
+        cooldownPeriod = data.cooldownPeriod;
+        range = data.range;
+        
+        // creature data
+        healthPoints = null;
+        healthPointsModifier = null;
+        baseHealthPoints = null;
+        damageAmount = null;
+        damageAmountModifier = null;
+        baseDamageAmount = null;
+        
+        // flavor info
         description = data.description;
+        
+        // dev info
+        actionData = data;
+        creatureData = null;
+        isBeingHeld = false;
+        placeOnTable = null;
+        
+        // display
+        Title.text = title;
+        EnergyCost.text = energyCost.ToString();
+        baseHealthPoints.text = healthPoints.ToString();
+        DamageAmount = damageAmount.ToString();
+        Description = description;
         image.texture = data.imageTexture;
 
+        // misc
         gameObject.name = title;
         energyCostDisplay.SetActive(true);
         healthPointsDisplay.SetActive(false);
@@ -66,18 +101,41 @@ public class Card : MonoBehaviour
 
     private Card(CardData_Creature data)
     {
+        // basic info
         title = data.title;
         ID = data.ID;
-        baseHealthPoints = data.healthPoints;
-        healthPointModifier = 0;
-        baseDamageAmount = data.damageAmount;
-        damageAmountModifier = 0;
-        description = data.description;
-        image.texture = data.imageTexture;
+
+        // action data
+        energyCost = null;
+        cooldownPeriod = null;
+        range = null;
         
-        healthPoints = healthPoints + healthPointModifier;
+        // creature data
+        baseHealthPoints = data.healthPoints;
+        healthPointModifier = data.healthPointModifier;
+        healthPoints = baseHealthPoints + healthPointModifier;
+        baseDamageAmount = data.damageAmount;
+        damageAmountModifier = data.damageAmountModifier;
         damageAmount = baseDamageAmount + damageAmountModifier;
         
+        // flavor info
+        description = data.description;
+        
+        // dev info
+        actionData = null;
+        creatureData = data;
+        isBeingHeld = false;
+        placeOnTable = null;
+
+        // display
+        Title.text = title;
+        EnergyCost.text = energyCost.ToString();
+        baseHealthPoints.text = healthPoints.ToString();
+        DamageAmount = damageAmount.ToString();
+        Description = description;
+        image.texture = data.imageTexture;
+
+        // misc
         gameObject.name = title;
         energyCostDisplay.SetActive(false);
         healthPointsDisplay.SetActive(true);
@@ -86,7 +144,10 @@ public class Card : MonoBehaviour
     
     private void Awake()
     {
-        initData = false; isBeingHeld = false;
+        // determine the type of CardData that is stored
+        // var cardData;
+        // if cardData.typeof.CardData_Action:
+        // initialize values accordingly
     }
 
     private void Update()
